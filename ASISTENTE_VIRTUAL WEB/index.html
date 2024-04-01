@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Asistente de Voz</title>
+    <style>
+        body {
+            background-color: #B2FFFF;
+            /* Este es el código de color hexadecimal para celeste */
+        }
+        
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center">
+        <h1>Asistente Virtual</h1>
+        <button onclick="startRecognition()"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm-9 9a5.978 5.978 0 0 1 4-5.656V4a4 4 0 0 1 8 0v2.344A5.978 5.978 0 0 1 21 12h-2a3.982 3.982 0 0 0-3-3.874V4a2 2 0 0 0-4 0v4.126A3.982 3.982 0 0 0 7 12H5a5.978 5.978 0 0 1-4-5.656V18h7v2H1v2h7v2H1v2h9v-2H8v-2h2v-2H3V12z'/%3E%3C/svg%3E" alt="Mic" width="24" height="24"> Iniciar Reconocimiento</button>
+        <button onclick="stopRecognition()">Detener Reconocimiento</button>
+    </div>
+    <script>
+        var recognition = new webkitSpeechRecognition();
+        recognition.lang = "es-ES";
+        recognition.continuous = true;
+
+        var synth = window.speechSynthesis;
+        var utterance = new SpeechSynthesisUtterance();
+        utterance.lang = "es-ES";
+
+        recognition.onresult = function(event) {
+            var text = event.results[event.results.length - 1][0].transcript;
+            console.log("Usuario:", text);
+            respondToInput(text);
+        }
+
+        function respondToInput(inputText) {
+            inputText = inputText.toLowerCase();
+            if (inputText.includes("hola") || inputText.includes("buenos días") || inputText.includes("buenas tardes") || inputText.includes("buenas noches")) {
+                var response = "Hola, ¿en qué puedo ayudarte hoy?";
+                console.log("Bot:", response);
+                utterance.text = response;
+                synth.speak(utterance);
+            } else if (inputText.includes("busca") || inputText.includes("investiga") || inputText.includes("quiero saber")) {
+                var searchQuery = inputText.replace('busca', '').replace('investiga', '').replace('quiero saber', '').trim();
+                console.log("Bot: Buscando información sobre", searchQuery);
+                utterance.text = "Buscando información sobre " + searchQuery;
+                synth.speak(utterance);
+                window.open("https://www.google.com/search?q=" + searchQuery);
+            } else if (inputText.includes("pon") && inputText.includes("canción")) {
+                var song = inputText.replace('pon', '').replace('canción', '').trim();
+                console.log("Bot: Reproduciendo", song, "en YouTube.");
+                utterance.text = "Reproduciendo " + song + " en YouTube.";
+                synth.speak(utterance);
+                window.open("https://www.youtube.com/results?search_query=" + song);
+            } else if (inputText.includes("cállate")) {
+                console.log("Bot: Me voy a callar.");
+                synth.cancel();
+            } else if (inputText.includes("responde")) {
+                console.log("Bot: Hola, aquí estoy.");
+                utterance.text = "Hola, aquí estoy.";
+                synth.speak(utterance);
+            } else if (inputText.includes("fecha")) {
+                var today = new Date();
+                var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
+                var response = "Hoy es " + date + ".";
+                console.log("Bot:", response);
+                utterance.text = response;
+                synth.speak(utterance);
+            } else if (inputText.includes("hora")) {
+                var today = new Date();
+                var time = today.getHours() + ":" + today.getMinutes();
+                var response = "Son las " + time + " horas.";
+                console.log("Bot:", response);
+                utterance.text = response;
+                synth.speak(utterance);
+            } else if (inputText.includes("whatsapp")) {
+                console.log("Bot: Abriendo WhatsApp.");
+                utterance.text = "Abriendo WhatsApp.";
+                synth.speak(utterance);
+                window.open("https://web.whatsapp.com/");
+            } else {
+                var response = "No estoy seguro de cómo responder a eso. ¿Puedes ser más específico?";
+                console.log("Bot:", response);
+                utterance.text = response;
+                synth.speak(utterance);
+            }
+        }
+
+        function startRecognition() {
+            recognition.start();
+        }
+
+        function stopRecognition() {
+            recognition.stop();
+        }
+    </script>
+</body>
+
+</html>
